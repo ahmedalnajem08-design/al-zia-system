@@ -1,10 +1,17 @@
 import { db } from '@/lib/db'
 import { NextResponse } from 'next/server'
 
+// Map report type parameter to invoice type
+const typeMap: Record<string, string> = {
+  sales: 'sale',
+  purchases: 'purchase',
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
-    const type = searchParams.get('type') || 'sale'
+    const rawType = searchParams.get('type') || 'sales'
+    const type = typeMap[rawType] || rawType
     const dateFrom = searchParams.get('dateFrom') || ''
     const dateTo = searchParams.get('dateTo') || ''
     const groupBy = searchParams.get('groupBy') || 'date'

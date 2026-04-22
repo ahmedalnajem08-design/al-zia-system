@@ -7,6 +7,7 @@ export async function GET(request: Request) {
     const q = searchParams.get('q') || ''
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '50')
+    const withBalances = searchParams.get('withBalances') === 'true'
 
     const where: any = { isActive: true }
     if (q) {
@@ -30,6 +31,60 @@ export async function GET(request: Request) {
       }),
       db.supplier.count({ where }),
     ])
+
+    // If withBalances is true, aggregate invoice totals and payment totals per supplier
+    if (withBalances) {
+      const supplierIds = suppliers.map((s) => s.id)
+
+      // Get total purchases (purchase invoices) per supplier
+      const purchasesAgg = await db.invoice.groupBy({
+        by: ['supplierId'],
+        where: {
+          supplierId: { in: supplierIds },
+          type: { in: ['purchase', 'purchase_return'] },
+          status: { in: ['confirmed', 'draft'] },
+        },
+        _sum: { total: true, paidAmount: true },
+      })
+
+      // Get total payments per supplier
+      const paymentsAgg = await db.payment.groupBy({
+        by: ['supplierId'],
+        where: {
+          supplierId: { in: supplierIds },
+        },
+        _sum: { amount: true },
+      })
+
+      const purchasesMap = new Map<string, { total: number; paidAmount: number }>()
+      purchasesAgg.forEach((item) => {
+        if (item.supplierId) {
+          purchasesMap.set(item.supplierId, {
+            total: item._sum.total || 0,
+            paidAmount: item._sum.paidAmount || 0,
+          })
+        }
+      })
+
+      const paymentsMap = new Map<string, number>()
+      paymentsAgg.forEach((item) => {
+        if (item.supplierId) {
+          paymentsMap.set(item.supplierId, item._sum.amount || 0)
+        }
+      })
+
+      const enrichedSuppliers = suppliers.map((s) => {
+        const purchases = purchasesMap.get(s.id) || { total: 0, paidAmount: 0 }
+        const payments = paymentsMap.get(s.id) || 0
+        return {
+          ...s,
+          totalPurchases: purchases.total,
+          totalPayments: payments,
+        }
+      })
+
+      return NextResponse.json({ suppliers: enrichedSuppliers, total, page, limit })
+    }
 
     return NextResponse.json({ suppliers, total, page, limit })
   } catch (error: any) {

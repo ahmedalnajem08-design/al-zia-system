@@ -25,6 +25,7 @@ export async function GET(request: Request) {
             name: true,
             sku: true,
             barcode: true,
+            costPrice: true,
             category: { select: { name: true } },
           },
         },
