@@ -93,7 +93,7 @@ const emptyForm: WarehouseFormData = {
 function formatNumber(value: number | string): string {
   const num = typeof value === 'string' ? parseFloat(value) : value
   if (isNaN(num)) return '٠'
-  return num.toLocaleString('ar-SA')
+  return num.toLocaleString('ar-IQ')
 }
 
 function formatCurrency(value: number): string {
@@ -386,7 +386,7 @@ export default function WarehousesView() {
                 <div className="bg-gray-50 rounded-lg px-3 py-2">
                   <span className="text-xs text-gray-500">قيمة المخزون</span>
                   <p className="text-base font-bold text-emerald-700">
-                    {formatCurrency(warehouse.totalStockValue)} <span className="text-xs font-normal text-gray-500">ر.س</span>
+                    {formatCurrency(warehouse.totalStockValue)} <span className="text-xs font-normal text-gray-500">د.ع</span>
                   </p>
                 </div>
 
@@ -606,7 +606,7 @@ export default function WarehousesView() {
                       0
                     )
                   )}{' '}
-                  ر.س
+                  د.ع
                 </span>
               </span>
             </div>

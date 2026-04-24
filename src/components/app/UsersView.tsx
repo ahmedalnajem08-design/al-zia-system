@@ -95,7 +95,7 @@ const emptyForm: FormData = {
 }
 
 function formatDate(date: string): string {
-  return new Date(date).toLocaleDateString('ar-SA', {
+  return new Date(date).toLocaleDateString('ar-IQ', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',

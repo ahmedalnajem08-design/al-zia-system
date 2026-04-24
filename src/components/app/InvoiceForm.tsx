@@ -93,7 +93,7 @@ function uid() {
 }
 
 function formatNumber(n: number) {
-  return new Intl.NumberFormat('ar-SY').format(Math.round(n))
+  return new Intl.NumberFormat('ar-IQ').format(Math.round(n))
 }
 
 function todayStr() {
@@ -600,7 +600,7 @@ export default function InvoiceForm({ type }: InvoiceFormProps) {
                                       : 'bg-emerald-50 text-emerald-600'
                                   }`}
                                 >
-                                  {formatNumber(Math.abs(c.balance))} ل.س
+                                  {formatNumber(Math.abs(c.balance))} د.ع
                                   {c.balance > 0 ? ' عليه' : ' له'}
                                 </span>
                               )}
@@ -691,7 +691,7 @@ export default function InvoiceForm({ type }: InvoiceFormProps) {
                                       : 'bg-emerald-50 text-emerald-600'
                                   }`}
                                 >
-                                  {formatNumber(Math.abs(s.balance))} ل.س
+                                  {formatNumber(Math.abs(s.balance))} د.ع
                                 </span>
                               )}
                             </button>
@@ -823,7 +823,7 @@ export default function InvoiceForm({ type }: InvoiceFormProps) {
                                         </div>
                                       </div>
                                       <span className="text-xs font-medium text-emerald-600">
-                                        {formatNumber(isSaleType ? p.sellPrice : p.costPrice)} ل.س
+                                        {formatNumber(isSaleType ? p.sellPrice : p.costPrice)} د.ع
                                       </span>
                                     </button>
                                   ))}
@@ -905,7 +905,7 @@ export default function InvoiceForm({ type }: InvoiceFormProps) {
                       {/* Total */}
                       <TableCell>
                         <div className="h-10 flex items-center px-3 text-sm font-medium bg-gray-50 rounded-md border border-gray-200">
-                          {formatNumber(item.total)} ل.س
+                          {formatNumber(item.total)} د.ع
                         </div>
                       </TableCell>
 
@@ -958,7 +958,7 @@ export default function InvoiceForm({ type }: InvoiceFormProps) {
               {/* Subtotal */}
               <div className="flex items-center justify-between py-2 border-b border-gray-100">
                 <span className="text-sm text-gray-600">المجموع الفرعي</span>
-                <span className="text-sm font-semibold">{formatNumber(subtotal)} ل.س</span>
+                <span className="text-sm font-semibold">{formatNumber(subtotal)} د.ع</span>
               </div>
 
               {/* Discount */}
@@ -974,7 +974,7 @@ export default function InvoiceForm({ type }: InvoiceFormProps) {
                     className="h-8 w-28 text-sm text-left"
                     placeholder="0"
                   />
-                  <span className="text-sm text-gray-400">ل.س</span>
+                  <span className="text-sm text-gray-400">د.ع</span>
                 </div>
               </div>
 
@@ -991,14 +991,14 @@ export default function InvoiceForm({ type }: InvoiceFormProps) {
                     className="h-8 w-28 text-sm text-left"
                     placeholder="0"
                   />
-                  <span className="text-sm text-gray-400">ل.س</span>
+                  <span className="text-sm text-gray-400">د.ع</span>
                 </div>
               </div>
 
               {/* Total */}
               <div className="flex items-center justify-between py-3 bg-gray-50 rounded-lg px-3 -mx-3">
                 <span className="text-base font-bold text-gray-800">الإجمالي</span>
-                <span className="text-base font-bold text-gray-800">{formatNumber(totalAmount)} ل.س</span>
+                <span className="text-base font-bold text-gray-800">{formatNumber(totalAmount)} د.ع</span>
               </div>
 
               {/* Paid Amount */}
@@ -1014,7 +1014,7 @@ export default function InvoiceForm({ type }: InvoiceFormProps) {
                     className="h-8 w-28 text-sm text-left"
                     placeholder="0"
                   />
-                  <span className="text-sm text-gray-400">ل.س</span>
+                  <span className="text-sm text-gray-400">د.ع</span>
                 </div>
               </div>
 
@@ -1030,7 +1030,7 @@ export default function InvoiceForm({ type }: InvoiceFormProps) {
                         : 'text-emerald-600'
                   }`}
                 >
-                  {formatNumber(Math.abs(remaining))} ل.س
+                  {formatNumber(Math.abs(remaining))} د.ع
                   {remaining > 0 && ' + '}
                   {remaining < 0 && ' - '}
                 </span>

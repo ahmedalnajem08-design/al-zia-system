@@ -9,7 +9,7 @@ import {
 } from 'lucide-react'
 
 function formatNumber(n: number) {
-  return new Intl.NumberFormat('ar-SY').format(Math.round(n))
+  return new Intl.NumberFormat('ar-IQ').format(Math.round(n))
 }
 
 export default function Dashboard() {
@@ -101,7 +101,7 @@ export default function Dashboard() {
                     <div key={i}>
                       <div className="flex justify-between text-sm mb-1">
                         <span className="font-medium">{p.productName}</span>
-                        <span className="text-gray-500">{formatNumber(p._sum.total)} ل.س</span>
+                        <span className="text-gray-500">{formatNumber(p._sum.total)} د.ع</span>
                       </div>
                       <div className="w-full bg-gray-100 rounded-full h-2.5">
                         <div
@@ -152,7 +152,7 @@ export default function Dashboard() {
                     <div className="text-left">
                       <p className="font-bold text-sm">{formatNumber(inv.total)}</p>
                       <p className="text-xs text-gray-400">
-                        {new Date(inv.date).toLocaleDateString('ar-SY')}
+                        {new Date(inv.date).toLocaleDateString('ar-IQ')}
                       </p>
                     </div>
                   </div>

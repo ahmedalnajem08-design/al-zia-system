@@ -128,11 +128,11 @@ const emptyPaymentForm: PaymentFormData = {
 }
 
 function formatNumber(value: number): string {
-  return value.toLocaleString('ar-SA', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
+  return value.toLocaleString('ar-IQ', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
 }
 
 function formatDate(date: string): string {
-  return new Date(date).toLocaleDateString('ar-SA')
+  return new Date(date).toLocaleDateString('ar-IQ')
 }
 
 function getPaymentMethodLabel(method: string): string {
@@ -428,7 +428,7 @@ export default function SuppliersView() {
                     }`}
                   >
                     <Wallet size={12} className="ml-1" />
-                    {formatNumber(Math.abs(supplier.balance))} ر.س
+                    {formatNumber(Math.abs(supplier.balance))} د.ع
                   </Badge>
                 </div>
 
@@ -463,9 +463,9 @@ export default function SuppliersView() {
                 {/* Balance label */}
                 <div className="mb-4 text-xs font-medium px-2.5 py-1.5 rounded-lg bg-gray-50 text-center">
                   {supplier.balance > 0
-                    ? `علينا: ${formatNumber(supplier.balance)} ر.س`
+                    ? `علينا: ${formatNumber(supplier.balance)} د.ع`
                     : supplier.balance < 0
-                    ? `لنا: ${formatNumber(Math.abs(supplier.balance))} ر.س`
+                    ? `لنا: ${formatNumber(Math.abs(supplier.balance))} د.ع`
                     : 'لا يوجد رصيد'}
                 </div>
 
@@ -674,7 +674,7 @@ export default function SuppliersView() {
                           : 'text-gray-600'
                       }`}
                     >
-                      {formatNumber(Math.abs(getLastBalance()))} ر.س
+                      {formatNumber(Math.abs(getLastBalance()))} د.ع
                     </p>
                   </div>
                 </div>

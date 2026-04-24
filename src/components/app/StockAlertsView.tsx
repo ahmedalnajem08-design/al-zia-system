@@ -56,7 +56,7 @@ type AlertLevel = 'all' | 'critical' | 'warning'
 /* ------------------------------------------------------------------ */
 
 function formatNumber(value: number): string {
-  return value.toLocaleString('ar-SA', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
+  return value.toLocaleString('ar-IQ', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
 }
 
 function getAlertLevel(item: StockAlert): 'critical' | 'warning' {

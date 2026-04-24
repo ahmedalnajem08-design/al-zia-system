@@ -70,7 +70,7 @@ interface SupplierBalance {
 /* ------------------------------------------------------------------ */
 
 function formatNumber(value: number): string {
-  return value.toLocaleString('ar-SA', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
+  return value.toLocaleString('ar-IQ', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
 }
 
 /* ------------------------------------------------------------------ */
@@ -180,7 +180,7 @@ export default function BalancesView() {
                   <p className="text-emerald-100 text-sm font-medium mb-1">
                     إجمالي المستحقات من الزبائن
                   </p>
-                  <p className="text-2xl font-bold">{formatNumber(totalReceivables)} ر.س</p>
+                  <p className="text-2xl font-bold">{formatNumber(totalReceivables)} د.ع</p>
                   <p className="text-emerald-200 text-xs mt-1">
                     {customers.filter((c) => c.balance > 0).length} زبون عليه رصيد
                   </p>
@@ -206,7 +206,7 @@ export default function BalancesView() {
                   <p className="text-red-100 text-sm font-medium mb-1">
                     إجمالي المستحقات للمجهزين
                   </p>
-                  <p className="text-2xl font-bold">{formatNumber(totalPayables)} ر.س</p>
+                  <p className="text-2xl font-bold">{formatNumber(totalPayables)} د.ع</p>
                   <p className="text-red-200 text-xs mt-1">
                     {suppliers.filter((s) => s.balance > 0).length} مجهز عليه رصيد
                   </p>
@@ -347,7 +347,7 @@ export default function BalancesView() {
                                 : 'bg-gray-50 text-gray-500 border border-gray-200'
                             }`}
                           >
-                            {formatNumber(Math.abs(customer.balance))} ر.س
+                            {formatNumber(Math.abs(customer.balance))} د.ع
                           </Badge>
                         </TableCell>
                       </TableRow>
@@ -439,7 +439,7 @@ export default function BalancesView() {
                                 : 'bg-gray-50 text-gray-500 border border-gray-200'
                             }`}
                           >
-                            {formatNumber(Math.abs(supplier.balance))} ر.س
+                            {formatNumber(Math.abs(supplier.balance))} د.ع
                           </Badge>
                         </TableCell>
                       </TableRow>

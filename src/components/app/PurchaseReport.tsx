@@ -116,16 +116,16 @@ type GroupByType = 'date' | 'product' | 'account'
 /*  Format helpers                                                    */
 /* ------------------------------------------------------------------ */
 function formatNumber(value: number): string {
-  return value.toLocaleString('ar-SA')
+  return value.toLocaleString('ar-IQ')
 }
 
 function formatCurrency(value: number): string {
-  return formatNumber(Math.round(value)) + ' ر.س'
+  return formatNumber(Math.round(value)) + ' د.ع'
 }
 
 function formatDate(dateStr: string): string {
   const date = new Date(dateStr)
-  return date.toLocaleDateString('ar-SA', {
+  return date.toLocaleDateString('ar-IQ', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',

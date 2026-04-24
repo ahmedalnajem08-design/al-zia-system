@@ -94,11 +94,11 @@ const statusConfig: Record<InvoiceStatus, { label: string; className: string }> 
 /* ------------------------------------------------------------------ */
 
 function formatNumber(n: number) {
-  return n.toLocaleString('ar-SA')
+  return n.toLocaleString('ar-IQ')
 }
 
 function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('ar-SA', {
+  return new Date(dateStr).toLocaleDateString('ar-IQ', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -623,10 +623,10 @@ export default function InvoiceDetail() {
                           {formatNumber(item.quantity)}
                         </TableCell>
                         <TableCell className="text-left text-sm text-gray-600">
-                          {formatNumber(item.price)} <span className="text-xs text-gray-400">ل.س</span>
+                          {formatNumber(item.price)} <span className="text-xs text-gray-400">د.ع</span>
                         </TableCell>
                         <TableCell className="text-left text-sm font-semibold text-gray-800">
-                          {formatNumber(item.total)} <span className="text-xs text-gray-400">ل.س</span>
+                          {formatNumber(item.total)} <span className="text-xs text-gray-400">د.ع</span>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -637,7 +637,7 @@ export default function InvoiceDetail() {
                         المجموع
                       </TableCell>
                       <TableCell className="text-left text-sm font-bold text-gray-800">
-                        {formatNumber(invoice.subtotal)} <span className="text-xs">ل.س</span>
+                        {formatNumber(invoice.subtotal)} <span className="text-xs">د.ع</span>
                       </TableCell>
                     </TableRow>
                   </TableBody>
@@ -661,7 +661,7 @@ export default function InvoiceDetail() {
               <div className="flex items-center justify-between py-2">
                 <span className="text-sm text-gray-500">المجموع الفرعي</span>
                 <span className="text-sm font-semibold text-gray-700">
-                  {formatNumber(invoice.subtotal)} ل.س
+                  {formatNumber(invoice.subtotal)} د.ع
                 </span>
               </div>
 
@@ -671,7 +671,7 @@ export default function InvoiceDetail() {
               <div className="flex items-center justify-between py-2">
                 <span className="text-sm text-gray-500">الخصم</span>
                 <span className="text-sm font-medium text-red-600">
-                  - {formatNumber(invoice.discount)} ل.س
+                  - {formatNumber(invoice.discount)} د.ع
                 </span>
               </div>
 
@@ -679,7 +679,7 @@ export default function InvoiceDetail() {
               <div className="flex items-center justify-between py-2">
                 <span className="text-sm text-gray-500">الضريبة</span>
                 <span className="text-sm font-medium text-gray-700">
-                  {formatNumber(invoice.tax)} ل.س
+                  {formatNumber(invoice.tax)} د.ع
                 </span>
               </div>
 
@@ -691,7 +691,7 @@ export default function InvoiceDetail() {
                   الإجمالي
                 </span>
                 <span className="text-lg font-bold text-emerald-700">
-                  {formatNumber(invoice.total)} ل.س
+                  {formatNumber(invoice.total)} د.ع
                 </span>
               </div>
 
@@ -701,7 +701,7 @@ export default function InvoiceDetail() {
               <div className="flex items-center justify-between py-2">
                 <span className="text-sm text-gray-500">المبلغ المدفوع</span>
                 <span className="text-sm font-semibold text-gray-700">
-                  {formatNumber(invoice.paidAmount)} ل.س
+                  {formatNumber(invoice.paidAmount)} د.ع
                 </span>
               </div>
 
@@ -719,7 +719,7 @@ export default function InvoiceDetail() {
                         : 'text-emerald-600'
                   }`}
                 >
-                  {formatNumber(Math.abs(remaining))} ل.س
+                  {formatNumber(Math.abs(remaining))} د.ع
                   {remaining > 0 && (
                     <span className="text-xs mr-1">مدين</span>
                   )}

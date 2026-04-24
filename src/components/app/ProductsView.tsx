@@ -132,7 +132,7 @@ const defaultNewUnit = (): ProductUnit => ({
 function formatNumber(value: number | string): string {
   const num = typeof value === 'string' ? parseFloat(value) : value
   if (isNaN(num)) return '٠'
-  return num.toLocaleString('ar-SA')
+  return num.toLocaleString('ar-IQ')
 }
 
 /* ------------------------------------------------------------------ */
