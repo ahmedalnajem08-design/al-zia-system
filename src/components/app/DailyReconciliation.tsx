@@ -63,7 +63,15 @@ export default function DailyReconciliation() {
     setLoading(true)
     try {
       const res = await fetch(`/api/reconciliation?date=${date}`)
+      if (!res.ok) {
+        setData(null)
+        return
+      }
       const result = await res.json()
+      if (result.error) {
+        setData(null)
+        return
+      }
       setData(result)
     } catch {
       setData(null)
