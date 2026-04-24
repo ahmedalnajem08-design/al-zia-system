@@ -33,6 +33,11 @@ import {
   Menu,
   X,
   Bell,
+  Calculator,
+  ArrowDownLeft,
+  ArrowUpRight,
+  FileText,
+  PieChart,
 } from 'lucide-react'
 
 import DashboardView from '@/components/app/DashboardView'
@@ -47,6 +52,12 @@ import BalancesView from '@/components/app/BalancesView'
 import UsersView from '@/components/app/UsersView'
 import StockAlertsView from '@/components/app/StockAlertsView'
 import InvoiceDetail from '@/components/app/InvoiceDetail'
+import DailyReconciliation from '@/components/app/DailyReconciliation'
+import ReceiptVoucher from '@/components/app/ReceiptVoucher'
+import PaymentVoucher from '@/components/app/PaymentVoucher'
+import ExpenseVoucher from '@/components/app/ExpenseVoucher'
+import VouchersReport from '@/components/app/VouchersReport'
+import ExpensesReport from '@/components/app/ExpensesReport'
 
 /* ------------------------------------------------------------------ */
 /*  Navigation items config                                           */
@@ -73,6 +84,12 @@ const navItems: NavItem[] = [
   { key: 'balances', label: 'الأرصدة', icon: Wallet },
   { key: 'users', label: 'المستخدمون', icon: UserCog },
   { key: 'stock_alerts', label: 'تنبيهات المخزون', icon: AlertTriangle },
+  { key: 'receipt_voucher', label: 'سند قبض', icon: ArrowDownLeft },
+  { key: 'payment_voucher', label: 'سند دفع', icon: ArrowUpRight },
+  { key: 'expense_voucher', label: 'سند صرف', icon: PieChart, separatorAfter: true },
+  { key: 'vouchers_report', label: 'كشف السندات', icon: FileText },
+  { key: 'expenses_report', label: 'كشف المصروفات', icon: PieChart, separatorAfter: true },
+  { key: 'daily_reconciliation', label: 'المطابقة اليومية', icon: Calculator },
 ]
 
 /* ------------------------------------------------------------------ */
@@ -153,6 +170,18 @@ function PageContent() {
       return <StockAlertsView />
     case 'invoice_detail':
       return <InvoiceDetail />
+    case 'receipt_voucher':
+      return <ReceiptVoucher />
+    case 'payment_voucher':
+      return <PaymentVoucher />
+    case 'expense_voucher':
+      return <ExpenseVoucher />
+    case 'vouchers_report':
+      return <VouchersReport />
+    case 'expenses_report':
+      return <ExpensesReport />
+    case 'daily_reconciliation':
+      return <DailyReconciliation />
     default:
       return <DashboardView />
   }

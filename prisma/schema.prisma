@@ -113,6 +113,7 @@ model Customer {
   updatedAt  DateTime @updatedAt
   invoices   Invoice[]
   payments   Payment[]
+  vouchers   Voucher[]
 }
 
 model Supplier {
@@ -129,6 +130,7 @@ model Supplier {
   updatedAt  DateTime @updatedAt
   invoices   Invoice[]
   payments   Payment[]
+  vouchers   Voucher[]
 }
 
 // ==================== الفواتير ====================
@@ -192,4 +194,40 @@ model Payment {
   invoice     Invoice?  @relation(fields: [invoiceId], references: [id])
   customer    Customer? @relation(fields: [customerId], references: [id])
   supplier    Supplier? @relation(fields: [supplierId], references: [id])
+}
+
+// ==================== سندات القبض والدفع ====================
+
+model Voucher {
+  id          String   @id @default(cuid())
+  voucherNo   String   @unique
+  type        String   // receipt, payment
+  customerId  String?
+  supplierId  String?
+  amount      Float
+  method      String   @default("cash") // cash, card, transfer, cheque
+  description String?
+  date        DateTime @default(now())
+  notes       String?
+  createdById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  customer    Customer? @relation(fields: [customerId], references: [id])
+  supplier    Supplier? @relation(fields: [supplierId], references: [id])
+}
+
+// ==================== سندات الصرف / المصروفات ====================
+
+model Expense {
+  id          String   @id @default(cuid())
+  expenseNo   String   @unique
+  amount      Float
+  category    String   @default("أخرى") // إيجار, مرافق, رواتب, صيانة, نقل, أخرى
+  description String
+  date        DateTime @default(now())
+  notes       String?
+  createdById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

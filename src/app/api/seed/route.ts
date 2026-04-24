@@ -5,6 +5,8 @@ export async function POST() {
   try {
     // Clear all existing data in order to avoid foreign key issues
     await db.payment.deleteMany()
+    await db.voucher.deleteMany()
+    await db.expense.deleteMany()
     await db.invoiceItem.deleteMany()
     await db.invoice.deleteMany()
     await db.warehouseStock.deleteMany()
@@ -318,6 +320,81 @@ export async function POST() {
       }
     }
 
+    // ==================== Create Sample Vouchers ====================
+    const voucherData = [
+      { type: 'receipt', customerId: cust1.id, amount: 500000, method: 'cash', description: 'دفعة على فاتورة بيع', daysAgo: 0 },
+      { type: 'receipt', customerId: cust3.id, amount: 250000, method: 'cash', description: 'تسديد رصيد مستحق', daysAgo: 1 },
+      { type: 'receipt', customerId: cust2.id, amount: 750000, method: 'transfer', description: 'تحويل بنكي', daysAgo: 2 },
+      { type: 'payment', supplierId: sup1.id, amount: 1200000, method: 'cash', description: 'دفعة على فاتورة شراء', daysAgo: 0 },
+      { type: 'payment', supplierId: sup2.id, amount: 600000, method: 'transfer', description: 'تسديد مستحقات', daysAgo: 3 },
+      { type: 'payment', supplierId: sup3.id, amount: 400000, method: 'cash', description: 'دفعة جزئية', daysAgo: 5 },
+    ]
+
+    for (let idx = 0; idx < voucherData.length; idx++) {
+      const v = voucherData[idx]
+      const prefix = v.type === 'receipt' ? 'RCP' : 'PAY'
+      const voucherNo = `${prefix}-${String(idx + 1).padStart(4, '0')}`
+      const date = new Date()
+      date.setDate(date.getDate() - v.daysAgo)
+
+      await db.voucher.create({
+        data: {
+          voucherNo,
+          type: v.type,
+          customerId: (v as any).customerId || null,
+          supplierId: (v as any).supplierId || null,
+          amount: v.amount,
+          method: v.method,
+          description: v.description,
+          date,
+          createdById: admin.id,
+        },
+      })
+
+      // Update balances
+      if ((v as any).customerId && v.type === 'receipt') {
+        await db.customer.update({
+          where: { id: (v as any).customerId },
+          data: { balance: { decrement: v.amount } },
+        })
+      }
+      if ((v as any).supplierId && v.type === 'payment') {
+        await db.supplier.update({
+          where: { id: (v as any).supplierId },
+          data: { balance: { decrement: v.amount } },
+        })
+      }
+    }
+
+    // ==================== Create Sample Expenses ====================
+    const expenseData = [
+      { amount: 500000, category: 'إيجار', description: 'إيجار المحل - شهر نيسان', daysAgo: 0 },
+      { amount: 150000, category: 'مرافق', description: 'فاتورة كهرباء', daysAgo: 1 },
+      { amount: 80000, category: 'مرافق', description: 'فاتورة ماء', daysAgo: 2 },
+      { amount: 2000000, category: 'رواتب', description: 'رواتب الموظفين', daysAgo: 0 },
+      { amount: 75000, category: 'نقل', description: 'أجور نقل بضائع', daysAgo: 3 },
+      { amount: 120000, category: 'صيانة', description: 'صيانة المولد الكهربائي', daysAgo: 4 },
+      { amount: 30000, category: 'أخرى', description: 'قرطاسية ومستلزمات مكتبية', daysAgo: 5 },
+    ]
+
+    for (let idx = 0; idx < expenseData.length; idx++) {
+      const e = expenseData[idx]
+      const expenseNo = `EXP-${String(idx + 1).padStart(4, '0')}`
+      const date = new Date()
+      date.setDate(date.getDate() - e.daysAgo)
+
+      await db.expense.create({
+        data: {
+          expenseNo,
+          amount: e.amount,
+          category: e.category,
+          description: e.description,
+          date,
+          createdById: admin.id,
+        },
+      })
+    }
+
     return NextResponse.json({
       message: 'تم إنشاء البيانات التجريبية بنجاح',
       stats: {
@@ -328,6 +405,8 @@ export async function POST() {
         customers: 5,
         suppliers: 5,
         invoices: invoiceData.length,
+        vouchers: voucherData.length,
+        expenses: expenseData.length,
       },
     })
   } catch (error: any) {

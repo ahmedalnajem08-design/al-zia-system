@@ -2,6 +2,7 @@ export type InvoiceType = 'sale' | 'purchase' | 'sale_return' | 'purchase_return
 export type InvoiceStatus = 'draft' | 'confirmed' | 'cancelled';
 export type PaymentMethod = 'cash' | 'card' | 'transfer';
 export type UserRole = 'admin' | 'manager' | 'user';
+export type VoucherType = 'receipt' | 'payment';
 
 export interface Product {
   id: string;
@@ -138,6 +139,37 @@ export interface Payment {
   createdAt: string;
 }
 
+export interface Voucher {
+  id: string;
+  voucherNo: string;
+  type: VoucherType;
+  customerId?: string;
+  supplierId?: string;
+  amount: number;
+  method: string;
+  description?: string;
+  date: string;
+  notes?: string;
+  createdById?: string;
+  createdAt: string;
+  updatedAt: string;
+  customer?: Customer;
+  supplier?: Supplier;
+}
+
+export interface Expense {
+  id: string;
+  expenseNo: string;
+  amount: number;
+  category: string;
+  description: string;
+  date: string;
+  notes?: string;
+  createdById?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface UserAccount {
   id: string;
   name: string;
@@ -160,4 +192,18 @@ export interface DashboardStats {
   topProducts: { name: string; quantity: number; total: number }[];
 }
 
-export type NavPage = 'dashboard' | 'products' | 'warehouses' | 'sale' | 'purchase' | 'sale_return' | 'purchase_return' | 'sales_report' | 'purchase_report' | 'customers' | 'suppliers' | 'balances' | 'users' | 'stock_alerts' | 'invoice_detail';
+export interface DailyReconciliation {
+  date: string;
+  cashSales: number;
+  creditSales: number;
+  totalSales: number;
+  paymentVouchers: number;
+  receiptVouchers: number;
+  totalExpenses: number;
+  netCash: number;
+  invoices: Invoice[];
+  vouchers: Voucher[];
+  expenses: Expense[];
+}
+
+export type NavPage = 'dashboard' | 'products' | 'warehouses' | 'sale' | 'purchase' | 'sale_return' | 'purchase_return' | 'sales_report' | 'purchase_report' | 'customers' | 'suppliers' | 'balances' | 'users' | 'stock_alerts' | 'invoice_detail' | 'receipt_voucher' | 'payment_voucher' | 'expense_voucher' | 'vouchers_report' | 'expenses_report' | 'daily_reconciliation';
