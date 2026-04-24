@@ -22,8 +22,7 @@ export async function POST() {
     const admin = await db.user.create({
       data: {
         name: 'مدير النظام',
-        email: 'admin@system.com',
-        password: 'admin123',
+        password: '1234',
         role: 'admin',
         isActive: true,
       },

@@ -8,8 +8,6 @@ import {
   Edit,
   Trash2,
   UserCog,
-  Phone,
-  Mail,
   Loader2,
   Shield,
   ShieldCheck,
@@ -64,19 +62,14 @@ import {
 interface UserData {
   id: string
   name: string
-  email: string
-  phone: string | null
   role: string
   isActive: boolean
   createdAt: string
-  updatedAt: string
 }
 
 interface FormData {
   name: string
-  email: string
   password: string
-  phone: string
   role: string
   isActive: boolean
 }
@@ -87,9 +80,7 @@ interface FormData {
 
 const emptyForm: FormData = {
   name: '',
-  email: '',
   password: '',
-  phone: '',
   role: 'user',
   isActive: true,
 }
@@ -113,7 +104,7 @@ function getRoleBadge(role: string): { label: string; className: string; icon: R
     case 'manager':
       return {
         label: 'مدير',
-        className: 'bg-blue-50 text-blue-700 border-blue-200',
+        className: 'bg-purple-50 text-purple-700 border-purple-200',
         icon: ShieldCheck,
       }
     default:
@@ -189,11 +180,7 @@ export default function UsersView() {
   const filteredUsers = users.filter((u) => {
     if (!debouncedSearch) return true
     const q = debouncedSearch.toLowerCase()
-    return (
-      u.name.toLowerCase().includes(q) ||
-      u.email.toLowerCase().includes(q) ||
-      (u.phone && u.phone.includes(q))
-    )
+    return u.name.toLowerCase().includes(q)
   })
 
   /* ---- Add / Edit ---- */
@@ -207,9 +194,7 @@ export default function UsersView() {
     setEditingUser(user)
     setFormData({
       name: user.name,
-      email: user.email,
       password: '',
-      phone: user.phone || '',
       role: user.role,
       isActive: user.isActive,
     })
@@ -219,10 +204,6 @@ export default function UsersView() {
   async function handleSave() {
     if (!formData.name.trim()) {
       toast.error('الاسم مطلوب')
-      return
-    }
-    if (!formData.email.trim()) {
-      toast.error('البريد الإلكتروني مطلوب')
       return
     }
     if (!editingUser && !formData.password.trim()) {
@@ -238,8 +219,6 @@ export default function UsersView() {
 
       const payload: any = {
         name: formData.name,
-        email: formData.email,
-        phone: formData.phone || null,
         role: formData.role,
         isActive: formData.isActive,
       }
@@ -323,7 +302,7 @@ export default function UsersView() {
       <div className="relative max-w-md">
         <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
         <Input
-          placeholder="بحث بالاسم أو البريد الإلكتروني..."
+          placeholder="بحث بالاسم..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="pr-10 bg-white border-gray-200 focus:border-purple-500 focus:ring-purple-500/20"
@@ -358,9 +337,7 @@ export default function UsersView() {
               <TableHeader>
                 <TableRow className="bg-gray-50/80 hover:bg-gray-50/80">
                   <TableHead className="text-gray-600 font-semibold text-xs">الاسم</TableHead>
-                  <TableHead className="text-gray-600 font-semibold text-xs">البريد الإلكتروني</TableHead>
-                  <TableHead className="text-gray-600 font-semibold text-xs">الهاتف</TableHead>
-                  <TableHead className="text-gray-600 font-semibold text-xs text-center">الدور</TableHead>
+                  <TableHead className="text-gray-600 font-semibold text-xs text-center">الدور/الصلاحية</TableHead>
                   <TableHead className="text-gray-600 font-semibold text-xs text-center">الحالة</TableHead>
                   <TableHead className="text-gray-600 font-semibold text-xs text-center">
                     تاريخ الإنشاء
@@ -383,7 +360,7 @@ export default function UsersView() {
                               user.role === 'admin'
                                 ? 'bg-red-100'
                                 : user.role === 'manager'
-                                ? 'bg-blue-100'
+                                ? 'bg-purple-100'
                                 : 'bg-gray-100'
                             }`}
                           >
@@ -392,7 +369,7 @@ export default function UsersView() {
                                 user.role === 'admin'
                                   ? 'text-red-700'
                                   : user.role === 'manager'
-                                  ? 'text-blue-700'
+                                  ? 'text-purple-700'
                                   : 'text-gray-600'
                               }`}
                             >
@@ -401,26 +378,6 @@ export default function UsersView() {
                           </div>
                           <span className="font-medium text-gray-800 text-sm">{user.name}</span>
                         </div>
-                      </TableCell>
-
-                      {/* Email */}
-                      <TableCell>
-                        <span className="flex items-center gap-1.5 text-gray-600 text-sm">
-                          <Mail size={13} className="text-gray-400" />
-                          {user.email}
-                        </span>
-                      </TableCell>
-
-                      {/* Phone */}
-                      <TableCell>
-                        {user.phone ? (
-                          <span className="flex items-center gap-1.5 text-gray-600 text-sm">
-                            <Phone size={13} className="text-gray-400" />
-                            {user.phone}
-                          </span>
-                        ) : (
-                          <span className="text-gray-300">—</span>
-                        )}
                       </TableCell>
 
                       {/* Role */}
@@ -512,22 +469,6 @@ export default function UsersView() {
               />
             </div>
 
-            {/* البريد الإلكتروني */}
-            <div className="grid gap-2">
-              <Label htmlFor="u-email">
-                البريد الإلكتروني <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="u-email"
-                type="email"
-                placeholder="البريد الإلكتروني"
-                value={formData.email}
-                onChange={(e) => setFormData((f) => ({ ...f, email: e.target.value }))}
-                dir="ltr"
-                className="text-left"
-              />
-            </div>
-
             {/* كلمة المرور */}
             <div className="grid gap-2">
               <Label htmlFor="u-password">
@@ -548,22 +489,9 @@ export default function UsersView() {
               />
             </div>
 
-            {/* الهاتف */}
+            {/* الدور/الصلاحية */}
             <div className="grid gap-2">
-              <Label htmlFor="u-phone">الهاتف</Label>
-              <Input
-                id="u-phone"
-                placeholder="رقم الهاتف"
-                value={formData.phone}
-                onChange={(e) => setFormData((f) => ({ ...f, phone: e.target.value }))}
-                dir="ltr"
-                className="text-left"
-              />
-            </div>
-
-            {/* الدور */}
-            <div className="grid gap-2">
-              <Label>الدور</Label>
+              <Label>الدور / الصلاحية</Label>
               <Select
                 value={formData.role}
                 onValueChange={(v) => setFormData((f) => ({ ...f, role: v }))}
@@ -586,7 +514,7 @@ export default function UsersView() {
                   <SelectItem value="manager">
                     <div className="flex flex-col gap-0.5 py-1">
                       <div className="flex items-center gap-2">
-                        <ShieldCheck size={14} className="text-blue-500" />
+                        <ShieldCheck size={14} className="text-purple-500" />
                         <span className="font-medium">مدير</span>
                       </div>
                       <span className="text-xs text-gray-400">

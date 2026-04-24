@@ -8,12 +8,9 @@ export async function GET() {
       select: {
         id: true,
         name: true,
-        email: true,
-        phone: true,
         role: true,
         isActive: true,
         createdAt: true,
-        updatedAt: true,
       },
     })
     return NextResponse.json(users)
@@ -25,30 +22,26 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { name, email, password, phone, role } = body
+    const { name, password, role } = body
 
-    if (!name || !email || !password) {
-      return NextResponse.json({ error: 'الاسم والبريد وكلمة المرور مطلوبة' }, { status: 400 })
+    if (!name || !password) {
+      return NextResponse.json({ error: 'الاسم وكلمة المرور مطلوبان' }, { status: 400 })
     }
 
-    const existing = await db.user.findUnique({ where: { email } })
+    const existing = await db.user.findFirst({ where: { name } })
     if (existing) {
-      return NextResponse.json({ error: 'البريد الإلكتروني موجود مسبقاً' }, { status: 400 })
+      return NextResponse.json({ error: 'اسم المستخدم موجود مسبقاً' }, { status: 400 })
     }
 
     const user = await db.user.create({
       data: {
         name,
-        email,
-        password, // Plain text for demo
-        phone: phone || null,
+        password,
         role: role || 'user',
       },
       select: {
         id: true,
         name: true,
-        email: true,
-        phone: true,
         role: true,
         isActive: true,
         createdAt: true,

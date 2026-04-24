@@ -13,6 +13,8 @@ interface AppState {
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
   toggleSidebar: () => void;
+  currentUser: { id: string; name: string; role: string } | null;
+  setCurrentUser: (user: { id: string; name: string; role: string } | null) => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -27,4 +29,6 @@ export const useAppStore = create<AppState>((set) => ({
   sidebarOpen: true,
   setSidebarOpen: (open) => set({ sidebarOpen: open }),
   toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),
+  currentUser: null,
+  setCurrentUser: (user) => set({ currentUser: user }),
 }));

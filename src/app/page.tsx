@@ -8,6 +8,7 @@ import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import { Badge } from '@/components/ui/badge'
 import {
   Sheet,
   SheetContent,
@@ -38,8 +39,10 @@ import {
   ArrowUpRight,
   FileText,
   PieChart,
+  LogOut,
 } from 'lucide-react'
 
+import LoginPage from '@/components/app/LoginPage'
 import DashboardView from '@/components/app/DashboardView'
 import ProductsView from '@/components/app/ProductsView'
 import WarehousesView from '@/components/app/WarehousesView'
@@ -188,15 +191,36 @@ function PageContent() {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Get role label                                                     */
+/* ------------------------------------------------------------------ */
+function getRoleLabel(role: string): string {
+  switch (role) {
+    case 'admin': return 'أدمن'
+    case 'manager': return 'مدير'
+    default: return 'مستخدم'
+  }
+}
+
+/* ------------------------------------------------------------------ */
 /*  Main Page Component                                               */
 /* ------------------------------------------------------------------ */
 export default function Home() {
-  const { sidebarOpen, setSidebarOpen } = useAppStore()
+  const { sidebarOpen, setSidebarOpen, currentUser, setCurrentUser } = useAppStore()
   const isMobile = useIsMobile()
+
+  // Show login page if not authenticated
+  if (!currentUser) {
+    return <LoginPage />
+  }
 
   const currentPageLabel =
     navItems.find((n) => n.key === useAppStore.getState().currentPage)?.label ??
     'لوحة التحكم'
+
+  function handleLogout() {
+    setCurrentUser(null)
+    toast.info('تم تسجيل الخروج')
+  }
 
   return (
     <div className="min-h-screen flex bg-gray-50" dir="rtl" lang="ar">
@@ -214,11 +238,11 @@ export default function Home() {
           {/* Logo / Brand */}
           <div className="flex items-center gap-3 h-16 px-4 border-b border-slate-700/60 flex-shrink-0">
             <div className="w-9 h-9 bg-emerald-600 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0 shadow-sm">
-              م.م
+              ض
             </div>
             {sidebarOpen && (
               <span className="text-lg font-bold whitespace-nowrap truncate">
-                نظام المبيعات
+                نظام الضياء
               </span>
             )}
           </div>
@@ -234,7 +258,7 @@ export default function Home() {
                 !sidebarOpen && 'text-center'
               )}
             >
-              {sidebarOpen ? '© 2025 نظام إدارة المخازن' : '©'}
+              {sidebarOpen ? '© 2025 نظام الضياء' : '©'}
             </div>
           </div>
         </aside>
@@ -274,10 +298,10 @@ export default function Home() {
                   {/* Mobile sidebar brand */}
                   <div className="flex items-center gap-3 h-16 px-4 border-b border-slate-700/60">
                     <div className="w-9 h-9 bg-emerald-600 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0">
-                      م.م
+                      ض
                     </div>
                     <span className="text-lg font-bold whitespace-nowrap">
-                      نظام المبيعات
+                      نظام الضياء
                     </span>
                     <SheetContentCloseButton />
                   </div>
@@ -297,7 +321,7 @@ export default function Home() {
             )}
 
             <h1 className="text-base md:text-lg font-bold text-gray-800 truncate">
-              نظام إدارة المبيعات والمخازن
+              نظام الضياء
             </h1>
           </div>
 
@@ -313,16 +337,35 @@ export default function Home() {
               <span className="absolute top-1.5 left-1.5 w-2 h-2 bg-emerald-500 rounded-full" />
             </Button>
 
-            {/* User avatar */}
+            {/* Current user info + logout */}
             <div className="flex items-center gap-2 mr-2">
               <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
-                <span className="text-sm font-bold text-emerald-700">م</span>
+                <span className="text-sm font-bold text-emerald-700">
+                  {currentUser.name.charAt(0)}
+                </span>
               </div>
               {!isMobile && (
-                <span className="text-sm font-medium text-gray-600 hidden md:inline">
-                  المدير
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-gray-700 hidden md:inline">
+                    {currentUser.name}
+                  </span>
+                  <Badge
+                    variant="outline"
+                    className="hidden lg:inline-flex text-xs bg-gray-50 text-gray-600 border-gray-200"
+                  >
+                    {getRoleLabel(currentUser.role)}
+                  </Badge>
+                </div>
               )}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-gray-400 hover:text-red-500 hover:bg-red-50"
+                onClick={handleLogout}
+                title="تسجيل الخروج"
+              >
+                <LogOut size={18} />
+              </Button>
             </div>
           </div>
         </header>
@@ -338,7 +381,7 @@ export default function Home() {
         {/*  Footer                                                     */}
         {/* ---------------------------------------------------------- */}
         <footer className="mt-auto px-4 py-3 text-center text-xs text-gray-400 border-t border-gray-100 bg-white">
-          نظام إدارة المبيعات والمخازن © {new Date().getFullYear()}
+          نظام الضياء © {new Date().getFullYear()}
         </footer>
       </div>
     </div>

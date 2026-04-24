@@ -12,8 +12,6 @@ export async function GET(
       select: {
         id: true,
         name: true,
-        email: true,
-        phone: true,
         role: true,
         isActive: true,
         createdAt: true,
@@ -38,28 +36,26 @@ export async function PUT(
   try {
     const { id } = await params
     const body = await request.json()
-    const { name, email, phone, role, isActive, password } = body
+    const { name, role, isActive, password } = body
 
     const existing = await db.user.findUnique({ where: { id } })
     if (!existing) {
       return NextResponse.json({ error: 'المستخدم غير موجود' }, { status: 404 })
     }
 
-    // Check email uniqueness if changed
-    if (email && email !== existing.email) {
-      const emailExists = await db.user.findUnique({ where: { email } })
-      if (emailExists) {
-        return NextResponse.json({ error: 'البريد الإلكتروني موجود مسبقاً' }, { status: 400 })
+    // Check name uniqueness if changed
+    if (name && name !== existing.name) {
+      const nameExists = await db.user.findFirst({ where: { name } })
+      if (nameExists) {
+        return NextResponse.json({ error: 'اسم المستخدم موجود مسبقاً' }, { status: 400 })
       }
     }
 
     const data: any = {}
     if (name !== undefined) data.name = name
-    if (email !== undefined) data.email = email
-    if (phone !== undefined) data.phone = phone || null
     if (role !== undefined) data.role = role
     if (isActive !== undefined) data.isActive = isActive
-    if (password !== undefined) data.password = password // Plain text for demo
+    if (password !== undefined) data.password = password
 
     const user = await db.user.update({
       where: { id },
@@ -67,8 +63,6 @@ export async function PUT(
       select: {
         id: true,
         name: true,
-        email: true,
-        phone: true,
         role: true,
         isActive: true,
         createdAt: true,
