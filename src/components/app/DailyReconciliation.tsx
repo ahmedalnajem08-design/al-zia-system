@@ -55,7 +55,11 @@ interface ReconciliationData {
 
 export default function DailyReconciliation() {
   const { setCurrentPage } = useAppStore()
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0])
+  // Use local date (Asia/Baghdad) instead of UTC
+  const [date, setDate] = useState(() => {
+    const now = new Date()
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+  })
   const [data, setData] = useState<ReconciliationData | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -85,7 +89,14 @@ export default function DailyReconciliation() {
     })
   }, [fetchData])
 
-  if (loading || !data) {
+  const receiptVoucherList = data?.vouchers?.filter((v: any) => v.type === 'receipt') || []
+  const paymentVoucherList = data?.vouchers?.filter((v: any) => v.type === 'payment') || []
+
+  const hasData = data && (
+    data.salesInvoices.length > 0 || data.vouchers.length > 0 || data.expenses.length > 0
+  )
+
+  if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 className="animate-spin text-gray-400" size={28} />
@@ -93,21 +104,26 @@ export default function DailyReconciliation() {
     )
   }
 
-  const receiptVoucherList = data.vouchers.filter((v: any) => v.type === 'receipt')
-  const paymentVoucherList = data.vouchers.filter((v: any) => v.type === 'payment')
+  // Default empty data
+  const d = data || {
+    cashSales: 0, creditSales: 0, totalSales: 0, totalPurchases: 0,
+    totalPurchasePaid: 0, receiptVouchers: 0, paymentVouchers: 0,
+    totalExpenses: 0, netCash: 0,
+    salesInvoices: [], purchaseInvoices: [], vouchers: [], expenses: [],
+  }
 
   const statsCards = [
-    { title: 'المبيعات النقدية', value: data.cashSales, icon: ShoppingCart, color: 'text-emerald-700', bg: 'bg-emerald-50' },
-    { title: 'المبيعات الآجلة', value: data.creditSales, icon: ShoppingCart, color: 'text-blue-700', bg: 'bg-blue-50' },
-    { title: 'سندات القبض', value: data.receiptVouchers, icon: ArrowDownLeft, color: 'text-teal-700', bg: 'bg-teal-50' },
-    { title: 'سندات الدفع', value: data.paymentVouchers, icon: ArrowUpRight, color: 'text-amber-700', bg: 'bg-amber-50' },
-    { title: 'المصروفات', value: data.totalExpenses, icon: Receipt, color: 'text-red-700', bg: 'bg-red-50' },
+    { title: 'المبيعات النقدية', value: d.cashSales, icon: ShoppingCart, color: 'text-emerald-700', bg: 'bg-emerald-50' },
+    { title: 'المبيعات الآجلة', value: d.creditSales, icon: ShoppingCart, color: 'text-blue-700', bg: 'bg-blue-50' },
+    { title: 'سندات القبض', value: d.receiptVouchers, icon: ArrowDownLeft, color: 'text-teal-700', bg: 'bg-teal-50' },
+    { title: 'سندات الدفع', value: d.paymentVouchers, icon: ArrowUpRight, color: 'text-amber-700', bg: 'bg-amber-50' },
+    { title: 'المصروفات', value: d.totalExpenses, icon: Receipt, color: 'text-red-700', bg: 'bg-red-50' },
     {
       title: 'صافي الصندوق',
-      value: data.netCash,
+      value: d.netCash,
       icon: Wallet,
-      color: data.netCash >= 0 ? 'text-emerald-700' : 'text-red-700',
-      bg: data.netCash >= 0 ? 'bg-emerald-50' : 'bg-red-50',
+      color: d.netCash >= 0 ? 'text-emerald-700' : 'text-red-700',
+      bg: d.netCash >= 0 ? 'bg-emerald-50' : 'bg-red-50',
     },
   ]
 
@@ -168,17 +184,17 @@ export default function DailyReconciliation() {
       {/* Detail Tabs */}
       <Tabs defaultValue="sales" dir="rtl">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="sales">المبيعات ({data.salesInvoices.length})</TabsTrigger>
+          <TabsTrigger value="sales">المبيعات ({d.salesInvoices.length})</TabsTrigger>
           <TabsTrigger value="receipts">سندات القبض ({receiptVoucherList.length})</TabsTrigger>
           <TabsTrigger value="payments">سندات الدفع ({paymentVoucherList.length})</TabsTrigger>
-          <TabsTrigger value="expenses">المصروفات ({data.expenses.length})</TabsTrigger>
+          <TabsTrigger value="expenses">المصروفات ({d.expenses.length})</TabsTrigger>
         </TabsList>
 
         {/* Sales Tab */}
         <TabsContent value="sales">
           <Card>
             <CardContent className="p-0">
-              {data.salesInvoices.length === 0 ? (
+              {d.salesInvoices.length === 0 ? (
                 <p className="text-gray-400 text-center py-12">لا توجد مبيعات في هذا اليوم</p>
               ) : (
                 <div className="overflow-x-auto max-h-96 overflow-y-auto">
@@ -194,7 +210,7 @@ export default function DailyReconciliation() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {data.salesInvoices.map((inv: any) => {
+                      {d.salesInvoices.map((inv: any) => {
                         const remaining = inv.total - inv.paidAmount
                         return (
                           <TableRow key={inv.id}>
@@ -304,7 +320,7 @@ export default function DailyReconciliation() {
         <TabsContent value="expenses">
           <Card>
             <CardContent className="p-0">
-              {data.expenses.length === 0 ? (
+              {d.expenses.length === 0 ? (
                 <p className="text-gray-400 text-center py-12">لا توجد مصروفات في هذا اليوم</p>
               ) : (
                 <div className="overflow-x-auto max-h-96 overflow-y-auto">
@@ -318,7 +334,7 @@ export default function DailyReconciliation() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {data.expenses.map((e: any) => (
+                      {d.expenses.map((e: any) => (
                         <TableRow key={e.id}>
                           <TableCell className="font-mono text-sm">{e.expenseNo}</TableCell>
                           <TableCell>

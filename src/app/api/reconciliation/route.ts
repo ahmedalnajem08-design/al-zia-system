@@ -7,40 +7,35 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const dateStr = searchParams.get('date') || new Date().toISOString().split('T')[0]
 
-    const startOfDay = new Date(dateStr + 'T00:00:00')
-    const endOfDay = new Date(dateStr + 'T23:59:59')
+    // Use wider range to cover timezone differences (UTC vs local Asia/Baghdad UTC+3)
+    // Data is stored in UTC, but user selects calendar date in local time
+    const rangeStart = new Date(dateStr + 'T00:00:00Z')
+    const rangeEnd = new Date(dateStr + 'T00:00:00Z')
+    rangeStart.setHours(rangeStart.getHours() - 12)
+    rangeEnd.setHours(rangeEnd.getHours() + 36)
 
-    // Get confirmed sales invoices for the day
     const salesInvoices = await db.invoice.findMany({
       where: {
         type: { in: ['sale'] },
         status: 'confirmed',
-        date: { gte: startOfDay, lte: endOfDay },
+        date: { gte: rangeStart, lte: rangeEnd },
       },
-      include: {
-        customer: { select: { id: true, name: true } },
-      },
+      include: { customer: { select: { id: true, name: true } } },
       orderBy: { createdAt: 'desc' },
     })
 
-    // Get confirmed purchase invoices for the day
     const purchaseInvoices = await db.invoice.findMany({
       where: {
         type: { in: ['purchase'] },
         status: 'confirmed',
-        date: { gte: startOfDay, lte: endOfDay },
+        date: { gte: rangeStart, lte: rangeEnd },
       },
-      include: {
-        supplier: { select: { id: true, name: true } },
-      },
+      include: { supplier: { select: { id: true, name: true } } },
       orderBy: { createdAt: 'desc' },
     })
 
-    // Get vouchers for the day
     const vouchers = await db.voucher.findMany({
-      where: {
-        date: { gte: startOfDay, lte: endOfDay },
-      },
+      where: { date: { gte: rangeStart, lte: rangeEnd } },
       include: {
         customer: { select: { id: true, name: true } },
         supplier: { select: { id: true, name: true } },
@@ -48,24 +43,37 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: 'desc' },
     })
 
-    // Get expenses for the day
     const expenses = await db.expense.findMany({
-      where: {
-        date: { gte: startOfDay, lte: endOfDay },
-      },
+      where: { date: { gte: rangeStart, lte: rangeEnd } },
       orderBy: { createdAt: 'desc' },
     })
 
-    // Calculate totals
-    const cashSales = salesInvoices.reduce((sum, inv) => sum + inv.paidAmount, 0)
-    const creditSales = salesInvoices.reduce((sum, inv) => sum + (inv.total - inv.paidAmount), 0)
-    const totalSales = salesInvoices.reduce((sum, inv) => sum + inv.total, 0)
-    const totalPurchases = purchaseInvoices.reduce((sum, inv) => sum + inv.total, 0)
-    const totalPurchasePaid = purchaseInvoices.reduce((sum, inv) => sum + inv.paidAmount, 0)
+    // Filter records by matching the calendar day (ignore timezone offset)
+    // Compare the date portion of the ISO string
+    const matchDate = (record: any, dateField: string) => {
+      const d = record[dateField] instanceof Date ? record[dateField] : new Date(record[dateField])
+      return d.toISOString().slice(0, 10) === dateStr
+    }
 
-    const receiptVouchers = vouchers.filter(v => v.type === 'receipt').reduce((sum, v) => sum + v.amount, 0)
-    const paymentVouchers = vouchers.filter(v => v.type === 'payment').reduce((sum, v) => sum + v.amount, 0)
-    const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0)
+    const filteredSales = salesInvoices.filter(inv => matchDate(inv, 'date'))
+    const filteredPurchases = purchaseInvoices.filter(inv => matchDate(inv, 'date'))
+    const filteredVouchers = vouchers.filter(v => matchDate(v, 'date'))
+    const filteredExpenses = expenses.filter(e => matchDate(e, 'date'))
+
+    // Calculate totals
+    const cashSales = filteredSales.reduce((sum, inv) => sum + (inv.paidAmount || 0), 0)
+    const creditSales = filteredSales.reduce((sum, inv) => sum + ((inv.total || 0) - (inv.paidAmount || 0)), 0)
+    const totalSales = filteredSales.reduce((sum, inv) => sum + (inv.total || 0), 0)
+    const totalPurchases = filteredPurchases.reduce((sum, inv) => sum + (inv.total || 0), 0)
+    const totalPurchasePaid = filteredPurchases.reduce((sum, inv) => sum + (inv.paidAmount || 0), 0)
+
+    const receiptVouchers = filteredVouchers
+      .filter(v => v.type === 'receipt')
+      .reduce((sum, v) => sum + (v.amount || 0), 0)
+    const paymentVouchers = filteredVouchers
+      .filter(v => v.type === 'payment')
+      .reduce((sum, v) => sum + (v.amount || 0), 0)
+    const totalExpenses = filteredExpenses.reduce((sum, e) => sum + (e.amount || 0), 0)
 
     // Net cash = cash sales + receipt vouchers - payment vouchers - expenses
     const netCash = cashSales + receiptVouchers - paymentVouchers - totalExpenses
@@ -81,12 +89,13 @@ export async function GET(request: NextRequest) {
       paymentVouchers,
       totalExpenses,
       netCash,
-      salesInvoices,
-      purchaseInvoices,
-      vouchers,
-      expenses,
+      salesInvoices: filteredSales,
+      purchaseInvoices: filteredPurchases,
+      vouchers: filteredVouchers,
+      expenses: filteredExpenses,
     })
   } catch (error: any) {
+    console.error('Reconciliation error:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }
