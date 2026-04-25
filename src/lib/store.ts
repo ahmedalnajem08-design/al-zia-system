@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { NavPage, Invoice } from './types';
+import type { NavPage } from './types';
 
 interface AppState {
   currentPage: NavPage;
@@ -17,6 +17,16 @@ interface AppState {
   setCurrentUser: (user: { id: string; name: string; role: string } | null) => void;
 }
 
+function getStoredUser() {
+  if (typeof window === 'undefined') return null;
+  try {
+    const saved = localStorage.getItem('zia_user');
+    return saved ? JSON.parse(saved) : null;
+  } catch {
+    return null;
+  }
+}
+
 export const useAppStore = create<AppState>((set) => ({
   currentPage: 'dashboard',
   setCurrentPage: (page) => set({ currentPage: page }),
@@ -29,6 +39,15 @@ export const useAppStore = create<AppState>((set) => ({
   sidebarOpen: true,
   setSidebarOpen: (open) => set({ sidebarOpen: open }),
   toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),
-  currentUser: null,
-  setCurrentUser: (user) => set({ currentUser: user }),
+  currentUser: getStoredUser(),
+  setCurrentUser: (user) => {
+    if (typeof window !== 'undefined') {
+      if (user) {
+        localStorage.setItem('zia_user', JSON.stringify(user));
+      } else {
+        localStorage.removeItem('zia_user');
+      }
+    }
+    set({ currentUser: user });
+  },
 }));
