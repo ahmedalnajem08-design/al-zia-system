@@ -149,7 +149,18 @@ export async function DELETE(
       return NextResponse.json({ error: 'الزبون غير موجود' }, { status: 404 })
     }
 
-    await db.customer.update({ where: { id }, data: { isActive: false } })
+    // حذف المدفوعات والسندات المرتبطة أولاً
+    await db.payment.deleteMany({ where: { customerId: id } })
+    await db.voucher.deleteMany({ where: { customerId: id } })
+    // حذف الفواتير المرتبطة
+    const invoices = await db.invoice.findMany({ where: { customerId: id } })
+    for (const inv of invoices) {
+      await db.invoiceItem.deleteMany({ where: { invoiceId: inv.id } })
+      await db.payment.deleteMany({ where: { invoiceId: inv.id } })
+    }
+    await db.invoice.deleteMany({ where: { customerId: id } })
+    // حذف الزبون نهائياً
+    await db.customer.delete({ where: { id } })
     return NextResponse.json({ message: 'تم حذف الزبون بنجاح' })
   } catch (error: any) {
     return NextResponse.json({ error: error.message || 'خطأ في حذف الزبون' }, { status: 500 })
