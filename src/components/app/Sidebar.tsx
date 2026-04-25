@@ -44,9 +44,9 @@ export default function Sidebar() {
       {/* Mobile toggle button */}
       <button
         onClick={toggleSidebar}
-        className="fixed top-4 right-4 z-50 lg:hidden bg-emerald-600 text-white p-2 rounded-lg shadow-lg"
+        className="fixed top-4 right-4 z-50 lg:hidden bg-emerald-600 text-white p-1.5 rounded-lg shadow-lg overflow-hidden"
       >
-        {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+        {sidebarOpen ? <X size={20} /> : <img src="/logo-64.png" alt="الضياء" className="w-7 h-7 object-cover" />}
       </button>
 
       {/* Sidebar */}
@@ -58,14 +58,14 @@ export default function Sidebar() {
         )}
       >
         <div className="flex items-center gap-3 p-4 border-b border-slate-700">
-          <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0">
-            م.م
+          <div className="w-9 h-9 rounded-lg flex-shrink-0 overflow-hidden">
+            <img src="/logo-64.png" alt="الضياء" className="w-full h-full object-cover" />
           </div>
           <span className={cn(
             'font-bold text-lg whitespace-nowrap transition-opacity',
             !sidebarOpen && 'lg:hidden'
           )}>
-            نظام المخزون
+            نظام الضياء
           </span>
         </div>
 

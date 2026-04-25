@@ -130,8 +130,8 @@ export default function LoginPage() {
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(255,255,255,0.1)_0%,_transparent_70%)]" />
           <div className="relative z-10">
             {/* Brand logo */}
-            <div className="w-16 h-16 mx-auto mb-4 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-lg border border-white/20">
-              <span className="text-2xl font-bold text-white">ض</span>
+            <div className="w-20 h-20 mx-auto mb-4 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-lg border border-white/20 overflow-hidden">
+              <img src="/logo.png" alt="نظام الضياء" className="w-full h-full object-cover" />
             </div>
             <h1 className="text-2xl font-bold text-white mb-1">نظام الضياء</h1>
             <p className="text-emerald-100 text-sm">نظام إدارة المبيعات والمخازن</p>
