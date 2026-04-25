@@ -1,6 +1,10 @@
 import { db } from '@/lib/db'
 import { NextResponse } from 'next/server'
 
+export async function GET() {
+  return POST()
+}
+
 export async function POST() {
   try {
     // Clear all existing data in order to avoid foreign key issues
